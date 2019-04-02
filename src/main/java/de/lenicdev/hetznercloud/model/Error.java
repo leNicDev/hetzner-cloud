@@ -9,6 +9,7 @@ public class Error {
 
     private String code;
     private String message;
+    private String details;
 
 
     public String getCode() {
@@ -17,6 +18,10 @@ public class Error {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getDetails() {
+        return details;
     }
 
 }

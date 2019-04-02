@@ -2,6 +2,7 @@ package de.lenicdev.hetznercloud.model.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateServerRequest {
@@ -19,6 +20,12 @@ public class CreateServerRequest {
     @JsonProperty("user_data")
     private String userData;
     private Boolean automount;
+
+
+    public CreateServerRequest() {
+        this.sshKeys = new ArrayList<>();
+        this.volumes = new ArrayList<>();
+    }
 
 
     public String getName() {
@@ -91,6 +98,95 @@ public class CreateServerRequest {
 
     public void setAutomount(Boolean automount) {
         this.automount = automount;
+    }
+
+
+    public static class Builder {
+        private String name;
+        private String serverType;
+        private String location;
+        private Boolean startAfterCreate;
+        private String image;
+        private List<String> sshKeys;
+        private List<Long> volumes;
+        private String userData;
+        private Boolean automount;
+
+
+        public Builder() {
+            this.sshKeys = new ArrayList<>();
+            this.volumes = new ArrayList<>();
+        }
+
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+        public Builder serverType(String serverType) {
+            this.serverType = serverType;
+            return this;
+        }
+        public Builder location(String location) {
+            this.location = location;
+            return this;
+        }
+        public Builder startAfterCreate(Boolean startAfterCreate) {
+            this.startAfterCreate = startAfterCreate;
+            return this;
+        }
+        public Builder image(String image) {
+            this.image = image;
+            return this;
+        }
+        public Builder sshKeys(List<String> sshKeys) {
+            this.sshKeys = sshKeys;
+            return this;
+        }
+        public Builder sshKey(String sshKey) {
+            // Initialize sshKeys list
+            if (this.sshKeys == null) {
+                this.sshKeys = new ArrayList<>();
+            }
+            // Add new ssh key
+            this.sshKeys.add(sshKey);
+            return this;
+        }
+        public Builder volumes(List<Long> volumes) {
+            this.volumes = volumes;
+            return this;
+        }
+        public Builder volume(Long volume) {
+            // Initialize volumes list
+            if (this.volumes == null) {
+                this.volumes = new ArrayList<>();
+            }
+            // Add new volume
+            this.volumes.add(volume);
+            return this;
+        }
+        public Builder userData(String userData) {
+            this.userData = userData;
+            return this;
+        }
+        public Builder automount(Boolean automount) {
+            this.automount = automount;
+            return this;
+        }
+
+        public CreateServerRequest build() {
+            final CreateServerRequest request = new CreateServerRequest();
+            request.setName(name);
+            request.setServerType(serverType);
+            request.setLocation(location);
+            request.setStartAfterCreate(startAfterCreate);
+            request.setImage(image);
+            request.setSshKeys(sshKeys);
+            request.setVolumes(volumes);
+            request.setUserData(userData);
+            request.setAutomount(automount);
+            return request;
+        }
     }
 
 }

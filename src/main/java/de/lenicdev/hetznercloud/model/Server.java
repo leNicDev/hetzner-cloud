@@ -16,6 +16,8 @@ public class Server {
     private String name;
     private String status;
     private Date created;
+    @JsonProperty("public_net")
+    private Network publicNet;
     @JsonProperty("server_type")
     private ServerType serverType;
     private Datacenter datacenter;
