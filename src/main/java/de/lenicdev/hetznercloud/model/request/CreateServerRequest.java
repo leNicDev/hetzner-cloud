@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateServerRequest {
+public class CreateServerRequest extends HetznerCloudRequest {
 
     private String name;
     @JsonProperty("server_type")

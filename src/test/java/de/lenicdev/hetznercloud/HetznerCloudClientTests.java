@@ -1,8 +1,10 @@
 package de.lenicdev.hetznercloud;
 
+import de.lenicdev.hetznercloud.model.Server;
 import de.lenicdev.hetznercloud.model.exception.HetznerCloudException;
 import de.lenicdev.hetznercloud.model.request.CreateServerRequest;
 import de.lenicdev.hetznercloud.model.response.CreateServerResponse;
+import de.lenicdev.hetznercloud.model.response.GetAllServersResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,9 +28,8 @@ public class HetznerCloudClientTests {
 
     @Nested
     class CreateServer {
-
         @Test
-        void createNewServer() throws IOException, HetznerCloudException {
+        void createNewServerTest() throws IOException, HetznerCloudException {
             // Build request
             final CreateServerRequest request = new CreateServerRequest.Builder()
                     .name("test-server")
@@ -41,8 +42,27 @@ public class HetznerCloudClientTests {
                     .build();
 
             final CreateServerResponse response = client.createServer(request);
+
+            assert response != null;
+        }
+    }
+
+    @Nested
+    class GetServer {
+        @Test
+        void getAllServersTest() throws IOException, HetznerCloudException {
+            final GetAllServersResponse response = client.getAllServers();
+
+            assert response != null;
         }
 
+        @Test
+        void getServerTest() throws IOException, HetznerCloudException {
+            final String serverId = "2331261";
+            final Server server = client.getServer(serverId);
+
+            assert server != null;
+        }
     }
 
 }

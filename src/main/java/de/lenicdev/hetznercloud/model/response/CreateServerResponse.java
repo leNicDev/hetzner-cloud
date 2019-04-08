@@ -6,7 +6,7 @@ import de.lenicdev.hetznercloud.model.Server;
 
 import java.util.List;
 
-public class CreateServerResponse {
+public class CreateServerResponse extends HetznerCloudResponse {
 
     private Server server;
     private Action action;

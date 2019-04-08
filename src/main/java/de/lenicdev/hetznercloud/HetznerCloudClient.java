@@ -1,22 +1,14 @@
 package de.lenicdev.hetznercloud;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import de.lenicdev.hetznercloud.constant.HetznerCloudEndpoints;
+import de.lenicdev.hetznercloud.model.Server;
 import de.lenicdev.hetznercloud.model.ServerType;
-import de.lenicdev.hetznercloud.model.exception.HetznerAuthenticationException;
 import de.lenicdev.hetznercloud.model.exception.HetznerCloudException;
-import de.lenicdev.hetznercloud.model.request.CreateServerRequest;
-import de.lenicdev.hetznercloud.model.response.CreateServerResponse;
-import de.lenicdev.hetznercloud.model.response.ErrorResponse;
-import okhttp3.*;
+import de.lenicdev.hetznercloud.model.request.*;
+import de.lenicdev.hetznercloud.model.response.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,21 +20,11 @@ public class HetznerCloudClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(HetznerCloudClient.class);
 
-    private static final MediaType REQUEST_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
-
-    private String apiToken;
-
-    private OkHttpClient httpClient;
-    private ObjectMapper objectMapper;
+    private HetznerCloudHttpClient httpClient;
 
 
     public HetznerCloudClient(String apiToken) {
-        this.apiToken = apiToken;
-
-        this.httpClient = new OkHttpClient();
-        this.objectMapper = new ObjectMapper()
-                .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        this.httpClient = new HetznerCloudHttpClient(apiToken);
     }
 
 
@@ -51,31 +33,10 @@ public class HetznerCloudClient {
      * @return List of all available server types
      * @throws IOException
      */
-    public List<ServerType> getAllServerTypes() throws IOException {
-        // Build http request
-        final Request httpRequest = new Request.Builder()
-                .url(HetznerCloudEndpoints.GET_ALL_SERVER_TYPES)
-                .header("Authorization", "Bearer " + apiToken)
-                .get()
-                .build();
-
-        try (Response httpResponse = httpClient.newCall(httpRequest).execute()) {
-            // Response body is null -> Return empty list (no results)
-            if (httpResponse.body() == null) {
-                return new ArrayList<>();
-            }
-
-            // Get response body as string
-            final String body = httpResponse.body().string();
-
-            LOG.debug("getAllServerTypes response: {}", body);
-
-            // Parse response body
-            final ServerType[] serverTypes = objectMapper.readValue(body, ServerType[].class);
-
-            // Return server types
-            return Arrays.asList(serverTypes);
-        }
+    public List<ServerType> getAllServerTypes() throws IOException, HetznerCloudException {
+        final GetAllServerTypesRequest request = new GetAllServerTypesRequest();
+        final GetAllServerTypesResponse response = httpClient.get(request, GetAllServerTypesResponse.class);
+        return response.getServerTypes();
     }
 
     /**
@@ -85,69 +46,39 @@ public class HetznerCloudClient {
      * @throws IOException
      */
     public CreateServerResponse createServer(CreateServerRequest request) throws IOException, HetznerCloudException {
-        final String requestBody = objectMapper.writeValueAsString(request);
-        final RequestBody httpRequestBody = RequestBody.create(REQUEST_MEDIA_TYPE, requestBody);
-
-        // Build http request
-        final Request httpRequest = new Request.Builder()
-                .url(HetznerCloudEndpoints.CREATE_SERVER)
-                .header("Authorization", "Bearer " + apiToken)
-                .post(httpRequestBody)
-                .build();
-
-        try (Response httpResponse = httpClient.newCall(httpRequest).execute()) {
-            // Response body is null -> Return null
-            if (httpResponse.body() == null) {
-                return null;
-            }
-
-            LOG.info("Response status {}", httpResponse.code());
-
-            // Request failed (status not equals 200)
-            if (httpResponse.code() < 200 || httpResponse.code() >= 300) {
-                handleErrorResponse(httpResponse);
-                return null;
-            }
-
-            // Get response body as string
-            final String body = httpResponse.body().string();
-
-            LOG.debug("createServer response: {}", body);
-
-            // Parse response body
-            return objectMapper.readValue(body, CreateServerResponse.class);
-        }
+        return httpClient.post(request, CreateServerResponse.class);
     }
 
-    private void handleErrorResponse(Response httpResponse) throws HetznerCloudException {
-        // No body (no information about the error)
-        if (httpResponse.body() == null) {
-            throw new HetznerCloudException("An internal error occurred and the Hetzner cloud API did not provide any information.", "internal_error", null);
-        }
+    /**
+     * Get all servers
+     * @return A list of all servers
+     * @throws IOException
+     */
+    public List<Server> getAllServers() throws IOException, HetznerCloudException {
+        final GetAllServersRequest request = new GetAllServersRequest();
+        final GetAllServersResponse response = httpClient.get(request, GetAllServersResponse.class);
+        return response.getServers();
+    }
 
-        // Get response body as string
-        final String body;
-        try {
-            body = httpResponse.body().string();
-        } catch (IOException e) {
-            throw new HetznerCloudException("An internal error occurred while reading the response body.", "internal_error", null);
-        }
+    /**
+     * Get a server by it's ID
+     * @param serverId The server ID
+     * @return The server associated with the given ID
+     */
+    public Server getServer(String serverId) throws IOException, HetznerCloudException {
+        final GetServerRequest request = new GetServerRequest(serverId);
+        final GetServerResponse response = httpClient.get(request, GetServerResponse.class);
+        return response.getServer();
+    }
 
-        final ErrorResponse response;
-        try {
-            response = objectMapper.readValue(body, ErrorResponse.class);
-        } catch (IOException e) {
-            throw new HetznerCloudException(e.getMessage(), "internal_error", body);
-        }
-
-        // Authentication error
-        if (httpResponse.code() >= 400 && httpResponse.code() < 500) {
-            throw new HetznerAuthenticationException(
-                    response.getError().getMessage(), response.getError().getCode(), response.getError().getDetails());
-        } else {
-            throw new HetznerCloudException(
-                    response.getError().getMessage(), response.getError().getCode(), response.getError().getDetails());
-        }
+    /**
+     * Update a server
+     * @param request The data to update
+     * @return The updated server
+     */
+    public Server updateServer(UpdateServerRequest request) throws IOException, HetznerCloudException {
+        final UpdateServerResponse response = httpClient.put(request, UpdateServerResponse.class);
+        return response.getServer();
     }
 
 }
