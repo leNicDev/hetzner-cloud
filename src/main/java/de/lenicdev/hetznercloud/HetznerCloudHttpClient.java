@@ -3,6 +3,7 @@ package de.lenicdev.hetznercloud;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import de.lenicdev.hetznercloud.model.exception.HetznerAuthenticationException;
 import de.lenicdev.hetznercloud.model.exception.HetznerCloudException;
 import de.lenicdev.hetznercloud.model.request.HetznerCloudRequest;
@@ -36,7 +37,8 @@ public class HetznerCloudHttpClient {
         // Initialize Jackson object mapper
         this.objectMapper = new ObjectMapper()
                 .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+                .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
 

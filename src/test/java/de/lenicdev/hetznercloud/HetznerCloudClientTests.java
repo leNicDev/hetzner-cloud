@@ -82,4 +82,14 @@ public class HetznerCloudClientTests {
         }
     }
 
+    @Nested
+    class ServerPowerOn {
+        @Test
+        void powerOnServerTest() throws IOException, HetznerCloudException {
+            final Action response = client.powerOnServer("2331261");
+
+            assert response != null;
+        }
+    }
+
 }

@@ -16,6 +16,7 @@ public class HetznerCloudEndpoints {
     public static final String SERVER_METRICS = BASE_URL + "/servers/{serverId}/metrics?type={type}&start={start}&end={end}";
     public static final String SERVER_ACTIONS = BASE_URL + "/servers/{serverId}/actions";
     public static final String SERVER_ACTION = BASE_URL + "/servers/{serverId}/actions/{actionId}";
+    public static final String SERVER_POWER_ON = BASE_URL + "/servers/{serverId}/actions/poweron";
 
 
     private HetznerCloudEndpoints() {}

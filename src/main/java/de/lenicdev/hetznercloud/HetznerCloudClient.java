@@ -109,4 +109,15 @@ public class HetznerCloudClient {
         return response.getAction();
     }
 
+    /**
+     * Power on a server
+     * @param serverId The server to turn it's power on
+     * @return The power on action
+     */
+    public Action powerOnServer(String serverId) throws IOException, HetznerCloudException {
+        final ServerPowerOnRequest request = new ServerPowerOnRequest(serverId);
+        final ServerPowerOnResponse response = httpClient.post(request, ServerPowerOnResponse.class);
+        return response.getAction();
+    }
+
 }
