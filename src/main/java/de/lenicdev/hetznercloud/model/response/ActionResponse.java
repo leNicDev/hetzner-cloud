@@ -2,7 +2,7 @@ package de.lenicdev.hetznercloud.model.response;
 
 import de.lenicdev.hetznercloud.model.Action;
 
-public class ServerPowerOnResponse extends HetznerCloudResponse {
+public class ActionResponse extends HetznerCloudResponse {
 
     private Action action;
 

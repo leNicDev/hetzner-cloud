@@ -17,6 +17,13 @@ public class HetznerCloudEndpoints {
     public static final String SERVER_ACTIONS = BASE_URL + "/servers/{serverId}/actions";
     public static final String SERVER_ACTION = BASE_URL + "/servers/{serverId}/actions/{actionId}";
     public static final String SERVER_POWER_ON = BASE_URL + "/servers/{serverId}/actions/poweron";
+    public static final String SERVER_SOFT_REBOOT = BASE_URL + "/servers/{serverId}/actions/reboot";
+    public static final String SERVER_RESET = BASE_URL + "/servers/{serverId}/actions/reset";
+    public static final String SERVER_SHUTDOWN = BASE_URL + "/servers/{serverId}/actions/shutdown";
+    public static final String SERVER_POWER_OFF = BASE_URL + "/servers/{serverId}/actions/poweroff";
+    public static final String SERVER_RESET_ROOT_PASSWORD = BASE_URL + "/servers/{serverId}/actions/reset_password";
+    public static final String SERVER_ENABLE_RESCUE_MODE = BASE_URL + "/servers/{serverId}/actions/enable_rescue";
+    public static final String SERVER_DISABLE_RESCUE_MODE = BASE_URL + "/servers/{serverId}/actions/disable_rescue";
 
 
     private HetznerCloudEndpoints() {}
