@@ -1,5 +1,6 @@
 package de.lenicdev.hetznercloud;
 
+import de.lenicdev.hetznercloud.model.Action;
 import de.lenicdev.hetznercloud.model.Server;
 import de.lenicdev.hetznercloud.model.ServerType;
 import de.lenicdev.hetznercloud.model.exception.HetznerCloudException;
@@ -79,6 +80,33 @@ public class HetznerCloudClient {
     public Server updateServer(UpdateServerRequest request) throws IOException, HetznerCloudException {
         final UpdateServerResponse response = httpClient.put(request, UpdateServerResponse.class);
         return response.getServer();
+    }
+
+    /**
+     * Get a list of all actions available for a server
+     * @param serverId The server id
+     * @return List of all available actions
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public List<Action> getAllServerActions(String serverId) throws IOException, HetznerCloudException {
+        final GetAllServerActionsRequest request = new GetAllServerActionsRequest(serverId);
+        final GetAllServerActionsResponse response = httpClient.get(request, GetAllServerActionsResponse.class);
+        return response.getActions();
+    }
+
+    /**
+     * Get a specific action of a specific server
+     * @param serverId The server id
+     * @param actionId The action id
+     * @return The requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public Action getServerAction(String serverId, String actionId) throws IOException, HetznerCloudException {
+        final GetServerActionRequest request = new GetServerActionRequest(serverId, actionId);
+        final GetServerActionResponse response = httpClient.get(request, GetServerActionResponse.class);
+        return response.getAction();
     }
 
 }

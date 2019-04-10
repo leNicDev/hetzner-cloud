@@ -1,15 +1,16 @@
 package de.lenicdev.hetznercloud;
 
+import de.lenicdev.hetznercloud.model.Action;
 import de.lenicdev.hetznercloud.model.Server;
 import de.lenicdev.hetznercloud.model.exception.HetznerCloudException;
 import de.lenicdev.hetznercloud.model.request.CreateServerRequest;
 import de.lenicdev.hetznercloud.model.response.CreateServerResponse;
-import de.lenicdev.hetznercloud.model.response.GetAllServersResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 public class HetznerCloudClientTests {
 
@@ -51,7 +52,7 @@ public class HetznerCloudClientTests {
     class GetServer {
         @Test
         void getAllServersTest() throws IOException, HetznerCloudException {
-            final GetAllServersResponse response = client.getAllServers();
+            final List<Server> response = client.getAllServers();
 
             assert response != null;
         }
@@ -62,6 +63,22 @@ public class HetznerCloudClientTests {
             final Server server = client.getServer(serverId);
 
             assert server != null;
+        }
+    }
+
+    @Nested
+    class GetServerActions {
+        @Test
+        void getAllServerActionsTest() throws IOException, HetznerCloudException {
+            final List<Action> response = client.getAllServerActions("2331261");
+
+            assert response != null;
+        }
+        @Test
+        void getServerActionTest() throws IOException, HetznerCloudException {
+            final Action response = client.getServerAction("2331261", "18392591");
+
+            assert response != null;
         }
     }
 
