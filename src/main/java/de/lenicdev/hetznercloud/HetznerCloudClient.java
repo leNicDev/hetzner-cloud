@@ -271,10 +271,183 @@ public class HetznerCloudClient {
      * @param serverId The id of the server to disable rescue mode for
      * @return The requested server action
      */
-    public Action disabledRescueMode(String serverId) throws IOException, HetznerCloudException {
+    public Action disableRescueMode(String serverId) throws IOException, HetznerCloudException {
         final ServerDisableRescueModeRequest request = new ServerDisableRescueModeRequest(serverId);
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
+    }
+
+    /**
+     * Create an image from a server
+     *
+     * @apiNote Creates an image (snapshot) from a server by copying the contents of its disks. This creates a
+     *          snapshot of the current state of the disk and copies it into an image. If the server is currently
+     *          running you must make sure that its disk content is consistent. Otherwise, the created image
+     *          may not be readable.
+     *          To make sure disk content is consistent, we recommend to shut down the server prior to creating
+     *          and image.
+     *          You can either create a <tt>backup</tt> image that is bound to the server and therefore will be
+     *          deleted when the server is deleted, or you can create an <tt>snapshot</tt> image which
+     *          is completely independent of the server it was created from and will survive server deletion.
+     *          Backup images are only available when the backup option is enabled for the Server.
+     *          Snapshot images are billed on a per GB basis.
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-create-image-from-a-server">https://docs.hetzner.cloud/#server-actions-create-image-from-a-server</a>
+     * @param request All data required to create an image from a server
+     * @return The created server image and the requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public ServerCreateImageResponse createServerImage(ServerCreateImageRequest request) throws IOException, HetznerCloudException {
+        return httpClient.post(request, ServerCreateImageResponse.class);
+    }
+
+    /**
+     * Rebuild a server from an image
+     *
+     * @apiNote Rebuilds a server overwriting its disk with the content of an image, thereby <b>destroying all data</b>
+     *          on the target server.
+     *          The image can either be one you have created earlier (<tt>backup</tt> or <tt>snapshot</tt> image)
+     *          or it can be a completely fresh <tt>system</tt> image provided by us (Hetzner). You can get a list of all
+     *          available images with <tt>GET /images</tt>.
+     *          Your server will automatically be powered off before the rebuild command executes.
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-rebuild-a-server-from-an-image">https://docs.hetzner.cloud/#server-actions-rebuild-a-server-from-an-image</a>
+     * @param serverId The id of the server to rebuild
+     * @param image The id or name of the image to rebuild the server from
+     * @return The requested server action and the new root password
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public ServerRebuildResponse rebuildServer(String serverId, String image) throws IOException, HetznerCloudException {
+        final ServerRebuildRequest request = new ServerRebuildRequest(serverId, image);
+        return httpClient.post(request, ServerRebuildResponse.class);
+    }
+
+    /**
+     * Change the type of a server
+     *
+     * @apiNote Changes the type (Cores, RAM and disk sizes) of a server.
+     *          Server must be powered off for this command to succeed.
+     *          This copies the content of its disk, and starts it again.
+     *          You can only migrate to server types with the same <tt>storage_type</tt> and equal or bigger disks.
+     *          Shrinking disks is not possible as it might destroy data.
+     *          If the disk gets upgraded, the server type can not be downgraded any more. If you plan to downgrade
+     *          the server type, set <tt>upgrade_disk</tt> to <code>false</code>.
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-change-the-type-of-a-server">https://docs.hetzner.cloud/#server-actions-change-the-type-of-a-server</a>
+     * @param request All data required to change the type of a server
+     * @return The requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public Action changeServerType(ServerChangeTypeRequest request) throws IOException, HetznerCloudException {
+        final ActionResponse response = httpClient.post(request, ActionResponse.class);
+        return response.getAction();
+    }
+
+    /**
+     * Enable backups for a server
+     *
+     * @apiNote Enables and configures the automatic daily backup option for the server. Enabling automatic
+     *          backups will increase the price of the server by 20%. In return, you will get seven slots
+     *          where images of type backup can be stored.
+     *          Backups are automatically created daily.
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-enable-and-configure-backups-for-a-server">https://docs.hetzner.cloud/#server-actions-enable-and-configure-backups-for-a-server</a>
+     * @param serverId The id of the server to enable backups for
+     * @return The requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public Action enableServerBackup(String serverId) throws IOException, HetznerCloudException {
+        final ServerEnableBackupRequest request = new ServerEnableBackupRequest(serverId);
+        final ActionResponse response = httpClient.post(request, ActionResponse.class);
+        return response.getAction();
+    }
+
+    /**
+     * Disable backups for a server
+     *
+     * @apiNote Disables the automatic backup option and deletes all existing Backups for a Server. No more
+     *          additional charges for backups will be made.
+     *          <b>Caution: This immediately removes all existing backups for the server!</b>
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-disable-backups-for-a-server">https://docs.hetzner.cloud/#server-actions-disable-backups-for-a-server</a>
+     * @param serverId The id of the server to disabled backups for
+     * @return The requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public Action disableServerBackup(String serverId) throws IOException, HetznerCloudException {
+        final ServerDisableBackupRequest request = new ServerDisableBackupRequest(serverId);
+        final ActionResponse response = httpClient.post(request, ActionResponse.class);
+        return response.getAction();
+    }
+
+    /**
+     * Attach an ISO to a server
+     *
+     * @apiNote Attaches an ISO to a server. The Server will immediately see it as a new disk. An already attached
+     *          ISO will automatically be detached before the new ISO is attached.
+     *          Server with attached ISOs have a modified boot order: They will try to boot from the ISO first before
+     *          falling back to hard disk.
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-attach-an-iso-to-a-server">https://docs.hetzner.cloud/#server-actions-attach-an-iso-to-a-server</a>
+     * @param serverId The id of the server to attach the ISO to
+     * @param iso ID or name of the ISO to attach to the server
+     * @return The requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public Action attachIsoToServer(String serverId, String iso) throws IOException, HetznerCloudException {
+        final ServerAttachIsoRequest request = new ServerAttachIsoRequest(serverId, iso);
+        final ActionResponse response = httpClient.post(request, ActionResponse.class);
+        return response.getAction();
+    }
+
+    /**
+     * Detach an ISO from a server
+     *
+     * @apiNote Detaches an ISO from a server. In case no ISO image is attached to the server, the status of the
+     *          returned action is immediately set to <tt>success</tt>.
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-detach-an-iso-from-a-server">https://docs.hetzner.cloud/#server-actions-detach-an-iso-from-a-server</a>
+     * @param serverId The id of the server to detach an ISO from
+     * @return The requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public Action detachIsoFromServer(String serverId) throws IOException, HetznerCloudException {
+        final ServerDetachIsoRequest request = new ServerDetachIsoRequest(serverId);
+        final ActionResponse response = httpClient.post(request, ActionResponse.class);
+        return response.getAction();
+    }
+
+    /**
+     * Change the protection of a server
+     *
+     * @apiNote Changes the protection configuration of the server.
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-change-protection-for-a-server">https://docs.hetzner.cloud/#server-actions-change-protection-for-a-server</a>
+     * @param request The changes that should be made to the server's protection
+     * @return The requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public Action changeServerProtection(ServerChangeProtectionRequest request) throws IOException, HetznerCloudException {
+        final ActionResponse response = httpClient.post(request, ActionResponse.class);
+        return response.getAction();
+    }
+
+    /**
+     * Request console access to a server
+     *
+     * @apiNote Requests credentials for remote access via VNC over websocket to keyboard, monitor and mouse for a
+     *          server. The provided url is valid for 1 minute, after this period a new url needs to be created
+     *          to connect to the server. How long the connection is open after the initial connect is not subject
+     *          to this timeout.
+     * @see <a href="https://docs.hetzner.cloud/#server-actions-request-console-for-a-server">https://docs.hetzner.cloud/#server-actions-request-console-for-a-server</a>
+     * @param serverId The id of the server to request console access for
+     * @return The wss url, the password and the requested server action
+     * @throws IOException
+     * @throws HetznerCloudException
+     */
+    public ServerConsoleResponse requestServerConsole(String serverId) throws IOException, HetznerCloudException {
+        final ServerConsoleRequest request = new ServerConsoleRequest(serverId);
+        return httpClient.post(request, ServerConsoleResponse.class);
     }
 
 }

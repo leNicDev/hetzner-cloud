@@ -24,6 +24,15 @@ public class HetznerCloudEndpoints {
     public static final String SERVER_RESET_ROOT_PASSWORD = BASE_URL + "/servers/{serverId}/actions/reset_password";
     public static final String SERVER_ENABLE_RESCUE_MODE = BASE_URL + "/servers/{serverId}/actions/enable_rescue";
     public static final String SERVER_DISABLE_RESCUE_MODE = BASE_URL + "/servers/{serverId}/actions/disable_rescue";
+    public static final String SERVER_CREATE_IMAGE = BASE_URL + "/servers/{serverId}/actions/create_image";
+    public static final String SERVER_REBUILD = BASE_URL + "/servers/{serverId}/actions/rebuild";
+    public static final String SERVER_CHANGE_TYPE = BASE_URL + "/servers/{serverId}/actions/change_type";
+    public static final String SERVER_ENABLE_BACKUP = BASE_URL + "/servers/{serverId}/actions/enable_backup";
+    public static final String SERVER_DISABLE_BACKUP = BASE_URL + "/servers/{serverId}/actions/disable_backup";
+    public static final String SERVER_ATTACH_ISO = BASE_URL + "/servers/{serverId}/actions/attach_iso";
+    public static final String SERVER_DETACH_ISO = BASE_URL + "/servers/{serverId}/actions/detach_iso";
+    public static final String SERVER_CHANGE_PROTECTION = BASE_URL + "/servers/{serverId}/actions/change_protection";
+    public static final String SERVER_REQUEST_CONSOLE = BASE_URL + "/servers/{serverId}/actions/request_console";
 
 
     private HetznerCloudEndpoints() {}
