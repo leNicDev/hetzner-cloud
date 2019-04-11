@@ -1,7 +1,5 @@
 package de.lenicdev.hetznercloud.model.request;
 
-import de.lenicdev.hetznercloud.constant.HetznerCloudEndpoints;
-
 public class ServerAttachIsoRequest extends HetznerCloudRequest {
 
     /**
@@ -10,8 +8,8 @@ public class ServerAttachIsoRequest extends HetznerCloudRequest {
     private String iso;
 
 
-    public ServerAttachIsoRequest(String serverId, String iso) {
-        super(HetznerCloudEndpoints.SERVER_ATTACH_ISO.replace("{serverId}", serverId));
+    public ServerAttachIsoRequest(String url, String iso) {
+        super(url);
         this.iso = iso;
     }
 

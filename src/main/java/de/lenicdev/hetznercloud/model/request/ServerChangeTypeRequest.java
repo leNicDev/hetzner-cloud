@@ -1,9 +1,12 @@
 package de.lenicdev.hetznercloud.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.lenicdev.hetznercloud.constant.HetznerCloudEndpoints;
 
 public class ServerChangeTypeRequest extends HetznerCloudRequest {
+
+    @JsonIgnore
+    private String serverId;
 
     /**
      * Whether the disk should be upgraded to the disk of the new server type.
@@ -21,11 +24,19 @@ public class ServerChangeTypeRequest extends HetznerCloudRequest {
 
 
     public ServerChangeTypeRequest(String serverId, Boolean upgradeDisk, String serverType) {
-        super(HetznerCloudEndpoints.SERVER_CHANGE_TYPE.replace("{serverId}", serverId));
+        this.serverId = serverId;
         this.upgradeDisk = upgradeDisk;
         this.serverType = serverType;
     }
 
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
+    }
 
     public Boolean getUpgradeDisk() {
         return upgradeDisk;

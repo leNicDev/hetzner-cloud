@@ -1,25 +1,31 @@
 package de.lenicdev.hetznercloud.model.request;
 
-import de.lenicdev.hetznercloud.constant.HetznerCloudEndpoints;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ServerCreateImageRequest extends HetznerCloudRequest {
 
+    @JsonIgnore
+    private String serverId;
     private String description;
     private String type;
     private String labels;
 
 
-    public ServerCreateImageRequest(String serverId) {
-        super(HetznerCloudEndpoints.SERVER_CREATE_IMAGE.replace("{serverId}", serverId));
-    }
-
     public ServerCreateImageRequest(String serverId, String description, String type, String labels) {
-        this(serverId);
+        this.serverId = serverId;
         this.description = description;
         this.type = type;
         this.labels = labels;
     }
 
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
+    }
 
     public String getDescription() {
         return description;

@@ -22,7 +22,11 @@ public class CreateServerRequest extends HetznerCloudRequest {
     private Boolean automount;
 
 
-    public CreateServerRequest() {
+    private CreateServerRequest() {
+    }
+
+    public CreateServerRequest(String url) {
+        super(url);
         this.sshKeys = new ArrayList<>();
         this.volumes = new ArrayList<>();
     }
@@ -123,26 +127,32 @@ public class CreateServerRequest extends HetznerCloudRequest {
             this.name = name;
             return this;
         }
+
         public Builder serverType(String serverType) {
             this.serverType = serverType;
             return this;
         }
+
         public Builder location(String location) {
             this.location = location;
             return this;
         }
+
         public Builder startAfterCreate(Boolean startAfterCreate) {
             this.startAfterCreate = startAfterCreate;
             return this;
         }
+
         public Builder image(String image) {
             this.image = image;
             return this;
         }
+
         public Builder sshKeys(List<String> sshKeys) {
             this.sshKeys = sshKeys;
             return this;
         }
+
         public Builder sshKey(String sshKey) {
             // Initialize sshKeys list
             if (this.sshKeys == null) {
@@ -152,10 +162,12 @@ public class CreateServerRequest extends HetznerCloudRequest {
             this.sshKeys.add(sshKey);
             return this;
         }
+
         public Builder volumes(List<Long> volumes) {
             this.volumes = volumes;
             return this;
         }
+
         public Builder volume(Long volume) {
             // Initialize volumes list
             if (this.volumes == null) {
@@ -165,10 +177,12 @@ public class CreateServerRequest extends HetznerCloudRequest {
             this.volumes.add(volume);
             return this;
         }
+
         public Builder userData(String userData) {
             this.userData = userData;
             return this;
         }
+
         public Builder automount(Boolean automount) {
             this.automount = automount;
             return this;

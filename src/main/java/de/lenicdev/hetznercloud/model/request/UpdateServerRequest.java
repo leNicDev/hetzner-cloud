@@ -1,19 +1,29 @@
 package de.lenicdev.hetznercloud.model.request;
 
-import de.lenicdev.hetznercloud.constant.HetznerCloudEndpoints;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Map;
 
 public class UpdateServerRequest extends HetznerCloudRequest {
 
+    @JsonIgnore
+    private String serverId;
     private String name;
     private Map<String, String> labels;
 
 
     public UpdateServerRequest(String serverId) {
-        super(HetznerCloudEndpoints.UPDATE_SERVER + serverId);
+        this.serverId = serverId;
     }
 
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
+    }
 
     public String getName() {
         return name;

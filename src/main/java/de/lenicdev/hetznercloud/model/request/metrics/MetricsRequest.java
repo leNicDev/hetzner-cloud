@@ -12,16 +12,8 @@ public abstract class MetricsRequest extends HetznerCloudRequest {
     private Date end;
 
 
-    public MetricsRequest() {
-        super();
-    }
-
-    public MetricsRequest(String serverId, String type, Date start, Date end) {
-        super();
-        this.serverId = serverId;
-        this.type = type;
-        this.start = start;
-        this.end = end;
+    public MetricsRequest(String url) {
+        super(url);
     }
 
     public MetricsRequest(String url, String serverId, String type, Date start, Date end) {

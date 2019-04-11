@@ -17,6 +17,8 @@
         <logback.version>1.2.3</logback.version>
 
         <junit.version>5.4.1</junit.version>
+        <wiremock.version>2.22.0</wiremock.version>
+        <restassured.version>3.3.0</restassured.version>
     </properties>
 
     <dependencies>
@@ -66,6 +68,22 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- WireMock -->
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-jre8</artifactId>
+            <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- REST Assured -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${restassured.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

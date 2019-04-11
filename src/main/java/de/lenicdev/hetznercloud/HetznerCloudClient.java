@@ -1,5 +1,6 @@
 package de.lenicdev.hetznercloud;
 
+import de.lenicdev.hetznercloud.config.HetznerCloudClientConfig;
 import de.lenicdev.hetznercloud.model.Action;
 import de.lenicdev.hetznercloud.model.Server;
 import de.lenicdev.hetznercloud.model.ServerType;
@@ -21,10 +22,18 @@ public class HetznerCloudClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(HetznerCloudClient.class);
 
+    private HetznerCloudClientConfig config;
+
     private HetznerCloudHttpClient httpClient;
 
 
     public HetznerCloudClient(String apiToken) {
+        this.config = new HetznerCloudClientConfig();
+        this.httpClient = new HetznerCloudHttpClient(apiToken);
+    }
+
+    public HetznerCloudClient(String apiToken, HetznerCloudClientConfig config) {
+        this.config = config;
         this.httpClient = new HetznerCloudHttpClient(apiToken);
     }
 
@@ -38,7 +47,8 @@ public class HetznerCloudClient {
      * @throws IOException
      */
     public List<ServerType> getAllServerTypes() throws IOException, HetznerCloudException {
-        final GetAllServerTypesRequest request = new GetAllServerTypesRequest();
+        final GetAllServerTypesRequest request = new GetAllServerTypesRequest(
+                config.getUrlConfig().getGetAllServerTypes());
         final GetAllServerTypesResponse response = httpClient.get(request, GetAllServerTypesResponse.class);
         return response.getServerTypes();
     }
@@ -54,6 +64,10 @@ public class HetznerCloudClient {
      * @throws IOException
      */
     public CreateServerResponse createServer(CreateServerRequest request) throws IOException, HetznerCloudException {
+        if (request.getUrl() == null) {
+            request.setUrl(config.getUrlConfig().getCreateServer());
+        }
+
         return httpClient.post(request, CreateServerResponse.class);
     }
 
@@ -66,7 +80,7 @@ public class HetznerCloudClient {
      * @throws IOException
      */
     public List<Server> getAllServers() throws IOException, HetznerCloudException {
-        final GetAllServersRequest request = new GetAllServersRequest();
+        final GetAllServersRequest request = new GetAllServersRequest(config.getUrlConfig().getGetAllServers());
         final GetAllServersResponse response = httpClient.get(request, GetAllServersResponse.class);
         return response.getServers();
     }
@@ -80,7 +94,7 @@ public class HetznerCloudClient {
      * @return The server associated with the given ID
      */
     public Server getServer(String serverId) throws IOException, HetznerCloudException {
-        final GetServerRequest request = new GetServerRequest(serverId);
+        final GetServerRequest request = new GetServerRequest(config.getUrlConfig().getGetServer(serverId));
         final GetServerResponse response = httpClient.get(request, GetServerResponse.class);
         return response.getServer();
     }
@@ -100,6 +114,10 @@ public class HetznerCloudClient {
      * @return The updated server
      */
     public Server updateServer(UpdateServerRequest request) throws IOException, HetznerCloudException {
+        if (request.getUrl() == null) {
+            request.setUrl(config.getUrlConfig().getUpdateServer(request.getServerId()));
+        }
+
         final UpdateServerResponse response = httpClient.put(request, UpdateServerResponse.class);
         return response.getServer();
     }
@@ -115,7 +133,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public List<Action> getAllServerActions(String serverId) throws IOException, HetznerCloudException {
-        final GetAllServerActionsRequest request = new GetAllServerActionsRequest(serverId);
+        final GetAllServerActionsRequest request = new GetAllServerActionsRequest(
+                config.getUrlConfig().getServerActions(serverId));
         final GetAllServerActionsResponse response = httpClient.get(request, GetAllServerActionsResponse.class);
         return response.getActions();
     }
@@ -132,7 +151,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action getServerAction(String serverId, String actionId) throws IOException, HetznerCloudException {
-        final GetServerActionRequest request = new GetServerActionRequest(serverId, actionId);
+        final GetServerActionRequest request = new GetServerActionRequest(
+                config.getUrlConfig().getServerAction(serverId, actionId));
         final ActionResponse response = httpClient.get(request, ActionResponse.class);
         return response.getAction();
     }
@@ -146,7 +166,7 @@ public class HetznerCloudClient {
      * @return The power on action
      */
     public Action powerOnServer(String serverId) throws IOException, HetznerCloudException {
-        final ServerPowerOnRequest request = new ServerPowerOnRequest(serverId);
+        final ServerPowerOnRequest request = new ServerPowerOnRequest(config.getUrlConfig().getServerPowerOn(serverId));
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -164,7 +184,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action rebootServer(String serverId) throws IOException, HetznerCloudException {
-        final ServerSoftRebootRequest request = new ServerSoftRebootRequest(serverId);
+        final ServerSoftRebootRequest request = new ServerSoftRebootRequest(
+                config.getUrlConfig().getServerSoftReboot(serverId));
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -183,7 +204,7 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action resetServer(String serverId) throws IOException, HetznerCloudException {
-        final ServerResetRequest resetRequest = new ServerResetRequest(serverId);
+        final ServerResetRequest resetRequest = new ServerResetRequest(config.getUrlConfig().getServerReset(serverId));
         final ActionResponse response = httpClient.post(resetRequest, ActionResponse.class);
         return response.getAction();
     }
@@ -201,7 +222,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action shutdownServer(String serverId) throws IOException, HetznerCloudException {
-        final ServerShutdownRequest request = new ServerShutdownRequest(serverId);
+        final ServerShutdownRequest request = new ServerShutdownRequest(
+                config.getUrlConfig().getServerShutdown(serverId));
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -219,7 +241,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action powerOffServer(String serverId) throws IOException, HetznerCloudException {
-        final ServerPowerOffRequest request = new ServerPowerOffRequest(serverId);
+        final ServerPowerOffRequest request = new ServerPowerOffRequest(
+                config.getUrlConfig().getServerPowerOff(serverId));
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -239,7 +262,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public ServerResetRootPasswordResponse resetServerRootPassword(String serverId) throws IOException, HetznerCloudException {
-        final ServerResetRootPasswordRequest request = new ServerResetRootPasswordRequest(serverId);
+        final ServerResetRootPasswordRequest request = new ServerResetRootPasswordRequest(
+                config.getUrlConfig().getServerResetRootPassword(serverId));
         return httpClient.post(request, ServerResetRootPasswordResponse.class);
     }
 
@@ -258,6 +282,10 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public ServerEnableRescueModeResponse enableRescueMode(ServerEnableRescueModeRequest request) throws IOException, HetznerCloudException {
+        if (request.getUrl() == null) {
+            request.setUrl(config.getUrlConfig().getServerEnableRescueMode(request.getServerId()));
+        }
+
         return httpClient.post(request, ServerEnableRescueModeResponse.class);
     }
 
@@ -272,7 +300,8 @@ public class HetznerCloudClient {
      * @return The requested server action
      */
     public Action disableRescueMode(String serverId) throws IOException, HetznerCloudException {
-        final ServerDisableRescueModeRequest request = new ServerDisableRescueModeRequest(serverId);
+        final ServerDisableRescueModeRequest request = new ServerDisableRescueModeRequest(
+                config.getUrlConfig().getServerDisableRescueMode(serverId));
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -298,6 +327,10 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public ServerCreateImageResponse createServerImage(ServerCreateImageRequest request) throws IOException, HetznerCloudException {
+        if (request.getUrl() == null) {
+            request.setUrl(config.getUrlConfig().getServerCreateImage(request.getServerId()));
+        }
+
         return httpClient.post(request, ServerCreateImageResponse.class);
     }
 
@@ -318,7 +351,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public ServerRebuildResponse rebuildServer(String serverId, String image) throws IOException, HetznerCloudException {
-        final ServerRebuildRequest request = new ServerRebuildRequest(serverId, image);
+        final ServerRebuildRequest request = new ServerRebuildRequest(
+                config.getUrlConfig().getServerRebuild(serverId), image);
         return httpClient.post(request, ServerRebuildResponse.class);
     }
 
@@ -339,6 +373,10 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action changeServerType(ServerChangeTypeRequest request) throws IOException, HetznerCloudException {
+        if (request.getUrl() == null) {
+            request.setUrl(config.getUrlConfig().getServerChangeType(request.getServerId()));
+        }
+
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -357,7 +395,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action enableServerBackup(String serverId) throws IOException, HetznerCloudException {
-        final ServerEnableBackupRequest request = new ServerEnableBackupRequest(serverId);
+        final ServerEnableBackupRequest request = new ServerEnableBackupRequest(
+                config.getUrlConfig().getServerEnableBackup(serverId));
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -375,7 +414,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action disableServerBackup(String serverId) throws IOException, HetznerCloudException {
-        final ServerDisableBackupRequest request = new ServerDisableBackupRequest(serverId);
+        final ServerDisableBackupRequest request = new ServerDisableBackupRequest(
+                config.getUrlConfig().getServerDisableBackup(serverId));
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -395,7 +435,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action attachIsoToServer(String serverId, String iso) throws IOException, HetznerCloudException {
-        final ServerAttachIsoRequest request = new ServerAttachIsoRequest(serverId, iso);
+        final ServerAttachIsoRequest request = new ServerAttachIsoRequest(
+                config.getUrlConfig().getServerAttachIso(serverId), iso);
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -412,7 +453,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action detachIsoFromServer(String serverId) throws IOException, HetznerCloudException {
-        final ServerDetachIsoRequest request = new ServerDetachIsoRequest(serverId);
+        final ServerDetachIsoRequest request = new ServerDetachIsoRequest(
+                config.getUrlConfig().getServerDetachIso(serverId));
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -428,6 +470,10 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public Action changeServerProtection(ServerChangeProtectionRequest request) throws IOException, HetznerCloudException {
+        if (request.getUrl() == null) {
+            request.setUrl(config.getUrlConfig().getServerChangeProtection(request.getServerId()));
+        }
+
         final ActionResponse response = httpClient.post(request, ActionResponse.class);
         return response.getAction();
     }
@@ -446,7 +492,8 @@ public class HetznerCloudClient {
      * @throws HetznerCloudException
      */
     public ServerConsoleResponse requestServerConsole(String serverId) throws IOException, HetznerCloudException {
-        final ServerConsoleRequest request = new ServerConsoleRequest(serverId);
+        final ServerConsoleRequest request = new ServerConsoleRequest(
+                config.getUrlConfig().getServerRequestConsole(serverId));
         return httpClient.post(request, ServerConsoleResponse.class);
     }
 
