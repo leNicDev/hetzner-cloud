@@ -2,16 +2,24 @@ package de.lenicdev.hetznercloud.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.Map;
+
 public class ServerCreateImageRequest extends HetznerCloudRequest {
 
     @JsonIgnore
     private String serverId;
     private String description;
     private String type;
-    private String labels;
+    private Map<String, String> labels;
 
 
-    public ServerCreateImageRequest(String serverId, String description, String type, String labels) {
+    public ServerCreateImageRequest(String serverId, String description, String type) {
+        this.serverId = serverId;
+        this.description = description;
+        this.type = type;
+    }
+
+    public ServerCreateImageRequest(String serverId, String description, String type, Map<String, String> labels) {
         this.serverId = serverId;
         this.description = description;
         this.type = type;
@@ -43,11 +51,11 @@ public class ServerCreateImageRequest extends HetznerCloudRequest {
         this.type = type;
     }
 
-    public String getLabels() {
+    public Map<String, String> getLabels() {
         return labels;
     }
 
-    public void setLabels(String labels) {
+    public void setLabels(Map<String, String> labels) {
         this.labels = labels;
     }
 
