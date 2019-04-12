@@ -2,7 +2,7 @@ language: java
 jdk:
   - oraclejdk8
   - oraclejdk11
-  - oraclejdk-ea
+  - openjdk-ea
 matrix:
   # Allow failures with early access JDKs
   allow_failures:
