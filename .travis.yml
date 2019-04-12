@@ -1,34 +1,14 @@
 language: java
 jdk:
-  - openjdk8
-  - openjdk9
-  - openjdk10
-  - openjdk11
-  - openjdk12
+  - oraclejdk8
+  - oraclejdk11
+  - oraclejdk-ea
+matrix:
+  # Allow failures with early access JDKs
+  allow_failures:
+    - jdk: openjdk-ea
 script:
-  # First, use openjdk8
-  - jdk_switcher use openjdk8
   # Install dependencies and build project
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-  # Run tests using openjdk8
-  - mvn test -B
-  # Run tests using openjdk9
-  - jdk_switcher use openjdk9
-  - export JAVA_HOME=$HOME/openjdk9
-  - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk9 --target $JAVA_HOME
-  - mvn test -B
-  # Run tests using openjdk10
-  - jdk_switcher use openjdk10
-  - export JAVA_HOME=$HOME/openjdk10
-  - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk10 --target $JAVA_HOME
-  - mvn test -B
-  # Run tests using openjdk11
-  - jdk_switcher use openjdk11
-  - export JAVA_HOME=$HOME/openjdk11
-  - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk11 --target $JAVA_HOME
-  - mvn test -B
-  # Run tests using openjdk12
-  - jdk_switcher use openjdk12
-  - export JAVA_HOME=$HOME/openjdk12
-  - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk12 --target $JAVA_HOME
+  # Run tests
   - mvn test -B
